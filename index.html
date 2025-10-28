@@ -12,36 +12,38 @@
       padding: 20px;
     }
 
-    /* === NAVBAR === */
-    nav {
-      background: #007bff;
-      padding: 12px 20px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-      margin-bottom: 25px;
-    }
-
-    nav h2 {
-      margin: 0;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      margin-left: 15px;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
     h1 {
       text-align: center;
       margin-bottom: 30px;
+    }
+
+    /* === CATEGORIE MENU === */
+    #category-menu {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .cat-btn {
+      background: #e9ecef;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .cat-btn:hover {
+      background: #007bff;
+      color: white;
+    }
+
+    .cat-btn.active {
+      background: #007bff;
+      color: white;
     }
 
     /* === PRODUCT GRID === */
@@ -58,19 +60,27 @@
       padding: 15px;
       text-align: center;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s;
     }
 
     .product:hover {
       transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .product img {
       width: 100%;
       height: 200px;
-      object-fit: contain;
+      object-fit: cover;
       border-radius: 8px;
+    }
+
+    .product h3 {
+      margin: 10px 0 5px;
+    }
+
+    .product p {
+      margin: 0 0 10px;
+      color: #333;
     }
 
     .controls {
@@ -142,19 +152,31 @@
       border-radius: 12px;
       margin-top: 25px;
     }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      #products {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      #products {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Navigatie -->
-  <nav>
-    <h2>🛍️ Mijn Webshop</h2>
-    <div>
-      <a href="index.html">Webshop</a>
-      <a href="bestellingen.html">Mijn bestellingen</a>
-    </div>
-  </nav>
+  <h1>🛍️ Mijn Mini Webshop</h1>
 
-  <h1>Producten</h1>
+  <!-- === CATEGORIE MENU === -->
+  <nav id="category-menu">
+    <button class="cat-btn active" onclick="filterProducts('Alle', this)">Alle</button>
+    <button class="cat-btn" onclick="filterProducts('Kleding', this)">Kleding</button>
+    <button class="cat-btn" onclick="filterProducts('Accessoires', this)">Accessoires</button>
+    <button class="cat-btn" onclick="filterProducts('Papierwaren', this)">Papierwaren</button>
+  </nav>
 
   <div id="products"></div>
 
@@ -178,13 +200,13 @@
 
   <script>
     const products = [
-      { name: "Santa Carolina", price: 19.99, image: "images/2022 santa carolina reserva Chardonnay 40x.jpg?w=400" },
-      { name: "Mok", price: 9.99, image: "https://images.unsplash.com/photo-1503602642458-232111445657?w=400" },
-      { name: "Pet", price: 14.99, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400" },
-      { name: "Sweater", price: 34.99, image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400" },
-      { name: "Tas", price: 24.99, image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?ixlib=rb-4.0.3&w=400" },
-      { name: "Sticker set", price: 4.99, image: "https://images.unsplash.com/photo-1503602642458-232111445657?ixlib=rb-4.0.3&w=400" },
-      { name: "Notitieboek", price: 11.99, image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400" }
+      { name: "T-shirt", price: 19.99, image: "Images/tshirt.jpg", category: "Kleding" },
+      { name: "Sweater", price: 34.99, image: "Images/sweater.jpg", category: "Kleding" },
+      { name: "Pet", price: 14.99, image: "Images/pet.jpg", category: "Accessoires" },
+      { name: "Mok", price: 9.99, image: "Images/mok.jpg", category: "Accessoires" },
+      { name: "Notitieboek", price: 11.99, image: "Images/notitieboek.jpg", category: "Papierwaren" },
+      { name: "Sticker set", price: 4.99, image: "Images/stickers.jpg", category: "Papierwaren" },
+      { name: "Tas", price: 24.99, image: "Images/tas.jpg", category: "Accessoires" },
     ];
 
     const productContainer = document.getElementById('products');
@@ -195,20 +217,31 @@
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    products.forEach((p, index) => {
-      const div = document.createElement('div');
-      div.className = 'product';
-      div.innerHTML = `
-        <img src="${p.image}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>€${p.price.toFixed(2)}</p>
-        <div class="controls">
-          <input type="number" id="qty-${index}" value="1" min="1">
-          <button onclick="addToCart(${index})">Voeg toe</button>
-        </div>
-      `;
-      productContainer.appendChild(div);
-    });
+    function renderProducts(category = "Alle") {
+      productContainer.innerHTML = "";
+      const filtered = category === "Alle" ? products : products.filter(p => p.category === category);
+
+      filtered.forEach((p, index) => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>€${p.price.toFixed(2)}</p>
+          <div class="controls">
+            <input type="number" id="qty-${index}" value="1" min="1">
+            <button onclick="addToCart(${index})">Voeg toe</button>
+          </div>
+        `;
+        productContainer.appendChild(div);
+      });
+    }
+
+    function filterProducts(category, button) {
+      document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      renderProducts(category);
+    }
 
     function saveCart() {
       localStorage.setItem("cart", JSON.stringify(cart));
@@ -217,9 +250,9 @@
     function addToCart(index) {
       const qty = parseInt(document.getElementById(`qty-${index}`).value);
       const p = products[index];
-      const existing = cart.find(item => item.name === p.name);
-      if (existing) existing.qty += qty;
-      else cart.push({ name: p.name, price: p.price, qty });
+      for (let i = 0; i < qty; i++) {
+        cart.push({ name: p.name, price: p.price });
+      }
       saveCart();
       renderCart();
     }
@@ -242,16 +275,18 @@
         total.textContent = "0.00";
         return;
       }
+
       cartItems.innerHTML = "";
       cart.forEach((c, i) => {
         const li = document.createElement("li");
         li.innerHTML = `
-          <span>${c.name} (x${c.qty}) - €${(c.price * c.qty).toFixed(2)}</span>
+          <span>${c.name} - €${c.price.toFixed(2)}</span>
           <button class="remove-btn" onclick="removeFromCart(${i})">❌</button>
         `;
         cartItems.appendChild(li);
       });
-      total.textContent = cart.reduce((sum, c) => sum + c.price * c.qty, 0).toFixed(2);
+
+      total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
     }
 
     function checkout() {
@@ -259,26 +294,35 @@
         alert('Je winkelmandje is leeg!');
         return;
       }
+
       const naam = prompt("Voer je naam in voor de bestelling:");
       if (!naam) return;
-      const totaal = cart.reduce((sum, c) => sum + c.price * c.qty, 0).toFixed(2);
+
+      const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
       checkoutTotal.textContent = totaal;
       checkoutBox.style.display = 'block';
+
       alert(`✅ Bedankt ${naam}! Je bestelling bedraagt €${totaal}.\n\nVolg de betaalinstructies onderaan de pagina.`);
+
+      const bestelnummer = Date.now();
       const bestellingen = JSON.parse(localStorage.getItem("orders")) || [];
       bestellingen.push({
+        bestelnummer,
         naam,
-        producten: cart.map(c => `${c.name} (x${c.qty})`),
+        producten: cart.map(c => c.name),
         totaal,
         datum: new Date().toLocaleString()
       });
       localStorage.setItem("orders", JSON.stringify(bestellingen));
+
       cart = [];
       saveCart();
       renderCart();
+
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
+    renderProducts();
     renderCart();
   </script>
 </body>
