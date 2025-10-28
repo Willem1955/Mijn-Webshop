@@ -49,10 +49,18 @@
       border: 2px solid #007bff;
       border-radius: 10px;
     }
+    #checkout-info {
+      display: none;
+      background: #e8f0fe;
+      border: 1px solid #007bff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
-  <h1>🛍️ Willem's Webshop</h1>
+  <h1>🛍️ Mijn Mini Webshop</h1>
 
   <div id="products"></div>
 
@@ -60,23 +68,33 @@
     <h2>🛒 Winkelmandje</h2>
     <ul id="cart-items"></ul>
     <p><strong>Totaal:</strong> €<span id="total">0.00</span></p>
-    <button onclick="checkout()">Afrekenen (fictief)</button>
+    <button onclick="checkout()">Afrekenen</button>
+  </div>
+
+  <div id="checkout-info">
+    <h2>💳 Betaal via overschrijving</h2>
+    <p>Bedankt voor je bestelling!</p>
+    <p>Gelieve het totaalbedrag van <strong>€<span id="checkout-total">0.00</span></strong> over te schrijven naar:</p>
+    <p><strong>Naam:</strong> Jouw Naam<br>
+       <strong>IBAN:</strong> BE00 0000 0000 0000<br>
+       <strong>Mededeling:</strong> Bestelling webshop</p>
+    <p>Zodra je betaling ontvangen is, wordt je bestelling verwerkt.</p>
   </div>
 
   <script>
     const products = [
       {
-        name: "T-shirts",
+        name: "T-shirt",
         price: 19.99,
         image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
       },
       {
-        name: "Mokken",
+        name: "Mok",
         price: 9.99,
         image: "https://images.unsplash.com/photo-1503602642458-232111445657"
       },
       {
-        name: "Petten",
+        name: "Pet",
         price: 14.99,
         image: "https://images.unsplash.com/photo-1585386959984-a41552261c8e"
       }
@@ -85,6 +103,8 @@
     const productContainer = document.getElementById('products');
     const cartItems = document.getElementById('cart-items');
     const total = document.getElementById('total');
+    const checkoutBox = document.getElementById('checkout-info');
+    const checkoutTotal = document.getElementById('checkout-total');
     let cart = [];
 
     products.forEach(p => {
@@ -112,9 +132,14 @@
     }
 
     function checkout() {
-      alert('Bedankt voor je bestelling! (Dit is een demo)');
-      cart = [];
-      renderCart();
+      if (cart.length === 0) {
+        alert('Je winkelmandje is leeg!');
+        return;
+      }
+      const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
+      checkoutTotal.textContent = totaal;
+      checkoutBox.style.display = 'block';
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
   </script>
 </body>
