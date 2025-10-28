@@ -1,263 +1,120 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <title>Mijn Webshop</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 1000px;
-      margin: auto;
-      background: #fafafa;
-      padding: 20px;
+<script>
+  const SCRIPT_URL = "HIER-JE-API-URL-PLAKKEN"; // <-- vervang dit!
+
+  const products = [
+    {
+      name: "T-shirt",
+      price: 19.99,
+      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
+    },
+    {
+      name: "Mok",
+      price: 9.99,
+      image: "https://images.unsplash.com/photo-1503602642458-232111445657"
+    },
+    {
+      name: "Pet",
+      price: 14.99,
+      image: "https://images.unsplash.com/photo-1585386959984-a41552261c8e"
+    }
+  ];
+
+  const productContainer = document.getElementById('products');
+  const cartItems = document.getElementById('cart-items');
+  const total = document.getElementById('total');
+  const checkoutBox = document.getElementById('checkout-info');
+  const checkoutTotal = document.getElementById('checkout-total');
+  let cart = [];
+
+  // === Producten tonen ===
+  products.forEach((p, index) => {
+    const div = document.createElement('div');
+    div.className = 'product';
+    div.innerHTML = `
+      <img src="${p.image}" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <p>€${p.price.toFixed(2)}</p>
+      <div class="controls">
+        <input type="number" id="qty-${index}" value="1" min="1">
+        <button onclick="addToCart(${index})">Voeg toe</button>
+      </div>
+    `;
+    productContainer.appendChild(div);
+  });
+
+  // === Winkelmandje-functies ===
+  function addToCart(index) {
+    const qty = parseInt(document.getElementById(`qty-${index}`).value);
+    const p = products[index];
+    for (let i = 0; i < qty; i++) {
+      cart.push({ name: p.name, price: p.price });
+    }
+    renderCart();
+  }
+
+  function removeFromCart(i) {
+    cart.splice(i, 1);
+    renderCart();
+  }
+
+  function renderCart() {
+    if (cart.length === 0) {
+      cartItems.innerHTML = "<li style='color:#555;'>Je winkelmandje is leeg.</li>";
+      total.textContent = "0.00";
+      return;
     }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    /* === PRODUCT GRID === */
-    #products {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .product {
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      background: white;
-      padding: 15px;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      transition: transform 0.2s;
-    }
-
-    .product:hover {
-      transform: translateY(-3px);
-    }
-
-    .product img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-
-    .product h3 {
-      margin: 10px 0 5px;
-    }
-
-    .product p {
-      margin: 0 0 10px;
-      color: #333;
-    }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .controls input {
-      width: 60px;
-      text-align: center;
-      padding: 4px;
-    }
-
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #0056b3;
-    }
-
-    #cart {
-      margin-top: 40px;
-      padding: 20px;
-      background: #fff;
-      border: 2px solid #007bff;
-      border-radius: 12px;
-    }
-
-    #cart-items {
-      list-style: none;
-      padding: 0;
-    }
-
-    #cart-items li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 5px;
-    }
-
-    .remove-btn {
-      background: #dc3545;
-      border: none;
-      color: white;
-      border-radius: 4px;
-      padding: 3px 8px;
-      cursor: pointer;
-    }
-
-    .remove-btn:hover {
-      background: #b52a36;
-    }
-
-    #checkout-info {
-      display: none;
-      background: #e8f0fe;
-      border: 1px solid #007bff;
-      padding: 20px;
-      border-radius: 12px;
-      margin-top: 25px;
-    }
-  </style>
-</head>
-<body>
-  <h1>🛍️ Mijn Mini Webshop</h1>
-
-  <div id="products"></div>
-
-  <div id="cart">
-    <h2>🛒 Winkelmandje</h2>
-    <ul id="cart-items"></ul>
-    <p><strong>Totaal:</strong> €<span id="total">0.00</span></p>
-    <button onclick="checkout()">Afrekenen</button>
-  </div>
-
-  <div id="checkout-info">
-    <h2>💳 Betaal via overschrijving</h2>
-    <p>Bedankt voor je bestelling!</p>
-    <p>Gelieve het totaalbedrag van <strong>€<span id="checkout-total">0.00</span></strong> over te schrijven naar:</p>
-    <p><strong>Naam:</strong> Jouw Naam<br>
-       <strong>IBAN:</strong> BE00 0000 0000 0000<br>
-       <strong>Mededeling:</strong> Bestelling webshop</p>
-    <p>Zodra je betaling ontvangen is, wordt je bestelling verwerkt.</p>
-  </div>
-
-  <script>
-    const SCRIPT_URL = "HIER-JE-API-URL-PLAKKEN"; // <-- vervang dit door je echte Google Apps Script URL!
-
-    const products = [
-      {
-        name: "T-shirt",
-        price: 19.99,
-        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
-      },
-      {
-        name: "Mok",
-        price: 9.99,
-        image: "https://images.unsplash.com/photo-1503602642458-232111445657"
-      },
-      {
-        name: "Pet",
-        price: 14.99,
-        image: "https://images.unsplash.com/photo-1585386959984-a41552261c8e"
-      }
-    ];
-
-    const productContainer = document.getElementById('products');
-    const cartItems = document.getElementById('cart-items');
-    const total = document.getElementById('total');
-    const checkoutBox = document.getElementById('checkout-info');
-    const checkoutTotal = document.getElementById('checkout-total');
-    let cart = [];
-
-    // Producten tonen
-    products.forEach((p, index) => {
-      const div = document.createElement('div');
-      div.className = 'product';
-      div.innerHTML = `
-        <img src="${p.image}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>€${p.price.toFixed(2)}</p>
-        <div class="controls">
-          <input type="number" id="qty-${index}" value="1" min="1">
-          <button onclick="addToCart(${index})">Voeg toe</button>
-        </div>
+    cartItems.innerHTML = "";
+    cart.forEach((c, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${c.name} - €${c.price.toFixed(2)}</span>
+        <button class="remove-btn" onclick="removeFromCart(${i})">❌</button>
       `;
-      productContainer.appendChild(div);
+      cartItems.appendChild(li);
     });
 
-    function addToCart(index) {
-      const qty = parseInt(document.getElementById(`qty-${index}`).value);
-      const p = products[index];
-      for (let i = 0; i < qty; i++) {
-        cart.push({ name: p.name, price: p.price });
-      }
-      renderCart();
+    total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
+  }
+
+  // === Afrekenen ===
+  async function checkout() {
+    if (cart.length === 0) {
+      alert('Je winkelmandje is leeg!');
+      return;
     }
 
-    function removeFromCart(i) {
-      cart.splice(i, 1);
-      renderCart();
+    const naam = prompt("Voer je naam in voor de bestelling:");
+    if (!naam) return;
+
+    const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
+    checkoutTotal.textContent = totaal;
+    checkoutBox.style.display = 'block';
+
+    const bestelling = {
+      naam: naam,
+      producten: cart.map(c => c.name),
+      totaal: totaal
+    };
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(bestelling),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (data.status === "ok") {
+        alert(`✅ Bestelling #${data.order} geregistreerd!\nBedrag: €${totaal}\n\nGelieve nu over te schrijven volgens de instructies.`);
+        cart = [];
+        renderCart();
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      } else {
+        alert("⚠️ Er ging iets mis bij het opslaan van je bestelling.");
+      }
+    } catch (err) {
+      alert("❌ Fout bij verbinding met Google Sheet.");
+      console.error(err);
     }
-
-    function renderCart() {
-      if (cart.length === 0) {
-        cartItems.innerHTML = "<li>Je winkelmandje is leeg.</li>";
-        total.textContent = "0.00";
-        return;
-      }
-
-      cartItems.innerHTML = cart.map((c, i) => `
-        <li>
-          ${c.name} - €${c.price.toFixed(2)}
-          <button class="remove-btn" onclick="removeFromCart(${i})">❌</button>
-        </li>
-      `).join('');
-
-      total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
-    }
-
-    async function checkout() {
-      if (cart.length === 0) {
-        alert('Je winkelmandje is leeg!');
-        return;
-      }
-
-      const naam = prompt("Voer je naam in voor de bestelling:");
-      if (!naam) return;
-
-      const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
-      checkoutTotal.textContent = totaal;
-      checkoutBox.style.display = 'block';
-
-      const bestelling = {
-        naam: naam,
-        producten: cart.map(c => c.name),
-        totaal: totaal
-      };
-
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify(bestelling),
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
-        if (data.status === "ok") {
-          alert(`✅ Bestelling #${data.order} geregistreerd!\nBedrag: €${totaal}\n\nGelieve nu over te schrijven volgens de instructies.`);
-          cart = [];
-          renderCart();
-          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        } else {
-          alert("⚠️ Er ging iets mis bij het opslaan van je bestelling.");
-        }
-      } catch (err) {
-        alert("❌ Fout bij verbinding met Google Sheet.");
-        console.error(err);
-      }
-      
+  }
+</script>
