@@ -12,10 +12,27 @@
       padding: 20px;
     }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
+    nav {
+      background: #007bff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      margin-bottom: 25px;
     }
+
+    nav h2 { margin: 0; }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 15px;
+    }
+
+    nav a:hover { text-decoration: underline; }
 
     .order {
       background: #fff;
@@ -31,10 +48,7 @@
       color: #007bff;
     }
 
-    ul {
-      padding-left: 20px;
-      margin: 5px 0 10px;
-    }
+    ul { padding-left: 20px; }
 
     button {
       background: #dc3545;
@@ -45,30 +59,20 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background: #b52a36;
-    }
-
-    a {
-      display: inline-block;
-      margin-top: 10px;
-      color: #007bff;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
+    button:hover { background: #b52a36; }
   </style>
 </head>
 <body>
-  <h1>📦 Mijn Bestellingen</h1>
+  <nav>
+    <h2>📦 Mijn Bestellingen</h2>
+    <div>
+      <a href="index.html">Webshop</a>
+      <a href="bestellingen.html">Mijn bestellingen</a>
+    </div>
+  </nav>
 
   <div id="orders"></div>
-
   <button onclick="clearOrders()">Verwijder alle bestellingen</button>
-  <br>
-  <a href="index.html">← Terug naar de webshop</a>
 
   <script>
     const ordersContainer = document.getElementById('orders');
@@ -79,7 +83,6 @@
         ordersContainer.innerHTML = "<p>Er zijn nog geen bestellingen opgeslagen.</p>";
         return;
       }
-
       ordersContainer.innerHTML = "";
       orders.forEach(o => {
         const div = document.createElement('div');
