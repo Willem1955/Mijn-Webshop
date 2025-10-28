@@ -12,6 +12,33 @@
       padding: 20px;
     }
 
+    /* === NAVBAR === */
+    nav {
+      background: #007bff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      margin-bottom: 25px;
+    }
+
+    nav h2 {
+      margin: 0;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 15px;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
     h1 {
       text-align: center;
       margin-bottom: 30px;
@@ -44,15 +71,6 @@
       height: 200px;
       object-fit: cover;
       border-radius: 8px;
-    }
-
-    .product h3 {
-      margin: 10px 0 5px;
-    }
-
-    .product p {
-      margin: 0 0 10px;
-      color: #333;
     }
 
     .controls {
@@ -127,7 +145,16 @@
   </style>
 </head>
 <body>
-  <h1>🛍️ Mijn Mini Webshop</h1>
+  <!-- Navigatie -->
+  <nav>
+    <h2>🛍️ Mijn Webshop</h2>
+    <div>
+      <a href="index.html">Webshop</a>
+      <a href="bestellingen.html">Mijn bestellingen</a>
+    </div>
+  </nav>
+
+  <h1>Producten</h1>
 
   <div id="products"></div>
 
@@ -150,7 +177,6 @@
   </div>
 
   <script>
-    // === PRODUCTEN ===
     const products = [
       { name: "T-shirt", price: 19.99, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400" },
       { name: "Mok", price: 9.99, image: "https://images.unsplash.com/photo-1503602642458-232111445657?w=400" },
@@ -167,10 +193,8 @@
     const checkoutBox = document.getElementById('checkout-info');
     const checkoutTotal = document.getElementById('checkout-total');
 
-    // === Winkelmandje laden uit localStorage ===
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    // === Producten tonen ===
     products.forEach((p, index) => {
       const div = document.createElement('div');
       div.className = 'product';
@@ -186,7 +210,6 @@
       productContainer.appendChild(div);
     });
 
-    // === Functies ===
     function saveCart() {
       localStorage.setItem("cart", JSON.stringify(cart));
     }
@@ -195,13 +218,8 @@
       const qty = parseInt(document.getElementById(`qty-${index}`).value);
       const p = products[index];
       const existing = cart.find(item => item.name === p.name);
-
-      if (existing) {
-        existing.qty += qty;
-      } else {
-        cart.push({ name: p.name, price: p.price, qty });
-      }
-
+      if (existing) existing.qty += qty;
+      else cart.push({ name: p.name, price: p.price, qty });
       saveCart();
       renderCart();
     }
@@ -224,7 +242,6 @@
         total.textContent = "0.00";
         return;
       }
-
       cartItems.innerHTML = "";
       cart.forEach((c, i) => {
         const li = document.createElement("li");
@@ -234,7 +251,6 @@
         `;
         cartItems.appendChild(li);
       });
-
       total.textContent = cart.reduce((sum, c) => sum + c.price * c.qty, 0).toFixed(2);
     }
 
@@ -243,16 +259,12 @@
         alert('Je winkelmandje is leeg!');
         return;
       }
-
       const naam = prompt("Voer je naam in voor de bestelling:");
       if (!naam) return;
-
       const totaal = cart.reduce((sum, c) => sum + c.price * c.qty, 0).toFixed(2);
       checkoutTotal.textContent = totaal;
       checkoutBox.style.display = 'block';
-
       alert(`✅ Bedankt ${naam}! Je bestelling bedraagt €${totaal}.\n\nVolg de betaalinstructies onderaan de pagina.`);
-
       const bestellingen = JSON.parse(localStorage.getItem("orders")) || [];
       bestellingen.push({
         naam,
@@ -261,7 +273,6 @@
         datum: new Date().toLocaleString()
       });
       localStorage.setItem("orders", JSON.stringify(bestellingen));
-
       cart = [];
       saveCart();
       renderCart();
