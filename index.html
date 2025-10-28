@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Mijn Webshop</title>
+  <title>Mijn Mini Webshop</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -135,6 +135,7 @@
     <ul id="cart-items"></ul>
     <p><strong>Totaal:</strong> €<span id="total">0.00</span></p>
     <button onclick="checkout()">Afrekenen</button>
+    <button onclick="clearCart()" style="background:#6c757d; margin-left:10px;">Leeg mandje</button>
   </div>
 
   <div id="checkout-info">
@@ -148,8 +149,6 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "HIER-JE-API-URL-PLAKKEN"; // <-- vervang dit!
-
     const products = [
       {
         name: "T-shirt",
@@ -191,7 +190,6 @@
       productContainer.appendChild(div);
     });
 
-    // === Winkelmandje-functies ===
     function addToCart(index) {
       const qty = parseInt(document.getElementById(`qty-${index}`).value);
       const p = products[index];
@@ -206,14 +204,19 @@
       renderCart();
     }
 
+    function clearCart() {
+      cart = [];
+      renderCart();
+    }
+
     function renderCart() {
-      cartItems.innerHTML = "";
       if (cart.length === 0) {
         cartItems.innerHTML = "<li style='color:#555;'>Je winkelmandje is leeg.</li>";
         total.textContent = "0.00";
         return;
       }
 
+      cartItems.innerHTML = "";
       cart.forEach((c, i) => {
         const li = document.createElement("li");
         li.innerHTML = `
@@ -226,7 +229,24 @@
       total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
     }
 
-    // === Afrekenen ===
-    async function checkout() {
+    function checkout() {
       if (cart.length === 0) {
-        alert('Je winkelmandje
+        alert('Je winkelmandje is leeg!');
+        return;
+      }
+
+      const naam = prompt("Voer je naam in voor de bestelling:");
+      if (!naam) return;
+
+      const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
+      checkoutTotal.textContent = totaal;
+      checkoutBox.style.display = 'block';
+
+      alert(`✅ Bedankt ${naam}! Je bestelling bedraagt €${totaal}.\n\nVolg de betaalinstructies onderaan de pagina.`);
+      cart = [];
+      renderCart();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
