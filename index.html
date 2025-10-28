@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Willem's Webshop</title>
+  <title>Mijn Mini Webshop</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -75,28 +75,30 @@
     <h2>💳 Betaal via overschrijving</h2>
     <p>Bedankt voor je bestelling!</p>
     <p>Gelieve het totaalbedrag van <strong>€<span id="checkout-total">0.00</span></strong> over te schrijven naar:</p>
-    <p><strong>Naam:</strong> Willems rekeneing<br>
-       <strong>IBAN:</strong> BE56 1234 5678 1234<br>
-       <strong>Mededeling:</strong> pralines 2025/ bestelnummer</p>
+    <p><strong>Naam:</strong> Jouw Naam<br>
+       <strong>IBAN:</strong> BE00 0000 0000 0000<br>
+       <strong>Mededeling:</strong> Bestelling webshop</p>
     <p>Zodra je betaling ontvangen is, wordt je bestelling verwerkt.</p>
   </div>
 
   <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeKKZwR_cCLir2Wf_zregFGvnWCRm43z8wAkFEHsTzHFZgJZ7JbCQUVxnrOmM3yr9vFw/exec"; // <-- vervang dit door je echte Google Apps Script URL!
+
     const products = [
       {
-        name: "T-shirts",
+        name: "T-shirt",
         price: 19.99,
         image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
       },
       {
-        name: "Mokken",
+        name: "Mok",
         price: 9.99,
         image: "https://images.unsplash.com/photo-1503602642458-232111445657"
       },
       {
-        name: "Petten",
+        name: "Pet",
         price: 14.99,
-        image: "https://images.unsplash.com/photo-1503602642458-232111445657"
+        image: "https://images.unsplash.com/photo-1585386959984-a41552261c8e"
       }
     ];
 
@@ -107,6 +109,7 @@
     const checkoutTotal = document.getElementById('checkout-total');
     let cart = [];
 
+    // Producten tonen
     products.forEach(p => {
       const div = document.createElement('div');
       div.className = 'product';
@@ -121,6 +124,7 @@
       productContainer.appendChild(div);
     });
 
+    // Winkelmandje
     function addToCart(name, price) {
       cart.push({ name, price });
       renderCart();
@@ -131,47 +135,46 @@
       total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
     }
 
-   <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeKKZwR_cCLir2Wf_zregFGvnWCRm43z8wAkFEHsTzHFZgJZ7JbCQUVxnrOmM3yr9vFw/exec"; // vervang dit!
-
-  // ... je producten en bestaande functies ...
-
-  async function checkout() {
-    if (cart.length === 0) {
-      alert('Je winkelmandje is leeg!');
-      return;
-    }
-
-    const naam = prompt("Voer je naam in voor de bestelling:");
-    const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
-
-    const bestelling = {
-      naam: naam,
-      producten: cart.map(c => c.name),
-      totaal: totaal
-    };
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(bestelling),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const data = await res.json();
-      if (data.status === "ok") {
-        alert(`Bestelling #${data.order} is geregistreerd!\nTotaal: €${totaal}\n\nJe kunt nu overschrijven.`);
-        cart = [];
-        renderCart();
-      } else {
-        alert("Er ging iets mis bij het registreren van je bestelling.");
+    // Afrekenen + data naar Google Sheet
+    async function checkout() {
+      if (cart.length === 0) {
+        alert('Je winkelmandje is leeg!');
+        return;
       }
-    } catch (err) {
-      alert("Fout bij verbinding met server.");
-      console.error(err);
-    }
-  }
-</script>
 
+      const naam = prompt("Voer je naam in voor de bestelling:");
+      if (!naam) return;
+
+      const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
+      checkoutTotal.textContent = totaal;
+      checkoutBox.style.display = 'block';
+
+      const bestelling = {
+        naam: naam,
+        producten: cart.map(c => c.name),
+        totaal: totaal
+      };
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(bestelling),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.status === "ok") {
+          alert(`✅ Bestelling #${data.order} geregistreerd!\nBedrag: €${totaal}\n\nGelieve nu over te schrijven volgens de instructies.`);
+          cart = [];
+          renderCart();
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        } else {
+          alert("⚠️ Er ging iets mis bij het opslaan van je bestelling.");
+        }
+      } catch (err) {
+        alert("❌ Fout bij verbinding met Google Sheet.");
+        console.error(err);
+      }
+    }
   </script>
 </body>
 </html>
