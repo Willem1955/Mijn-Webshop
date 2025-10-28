@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Mijn Mini Webshop</title>
+  <title>Mijn Webshop</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -287,4 +287,13 @@
       // Winkelmandje leegmaken
       cart = [];
       saveCart();
-      rende
+      renderCart();
+
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    // Pagina start: winkelmandje laden
+    renderCart();
+  </script>
+</body>
+</html>
