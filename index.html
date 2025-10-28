@@ -6,56 +6,95 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 800px;
+      max-width: 1000px;
       margin: auto;
       background: #fafafa;
+      padding: 20px;
     }
-    h1 { text-align: center; }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    /* === PRODUCT GRID === */
+    #products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
     .product {
       border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-      margin: 10px;
+      border-radius: 12px;
       background: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
     }
-    img {
-      width: 100px;
-      height: 100px;
+
+    .product:hover {
+      transform: translateY(-3px);
+    }
+
+    .product img {
+      width: 100%;
+      height: 200px;
       object-fit: cover;
       border-radius: 8px;
     }
-    .info {
-      flex-grow: 1;
+
+    .product h3 {
+      margin: 10px 0 5px;
     }
+
+    .product p {
+      margin: 0 0 10px;
+      color: #333;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .controls input {
+      width: 60px;
+      text-align: center;
+      padding: 4px;
+    }
+
     button {
       background: #007bff;
       color: white;
       border: none;
       padding: 8px 12px;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
     }
+
     button:hover {
       background: #0056b3;
     }
+
     #cart {
-      margin-top: 30px;
-      padding: 10px;
+      margin-top: 40px;
+      padding: 20px;
       background: #fff;
       border: 2px solid #007bff;
-      border-radius: 10px;
+      border-radius: 12px;
     }
+
     #checkout-info {
       display: none;
       background: #e8f0fe;
       border: 1px solid #007bff;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 25px;
     }
   </style>
 </head>
@@ -82,7 +121,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeKKZwR_cCLir2Wf_zregFGvnWCRm43z8wAkFEHsTzHFZgJZ7JbCQUVxnrOmM3yr9vFw/exec"; // <-- vervang dit door je echte Google Apps Script URL!
+    const SCRIPT_URL = "HIER-JE-API-URL-PLAKKEN"; // <-- vervang dit door je echte Google Apps Script URL!
 
     const products = [
       {
@@ -110,23 +149,27 @@
     let cart = [];
 
     // Producten tonen
-    products.forEach(p => {
+    products.forEach((p, index) => {
       const div = document.createElement('div');
       div.className = 'product';
       div.innerHTML = `
         <img src="${p.image}" alt="${p.name}">
-        <div class="info">
-          <h3>${p.name}</h3>
-          <p>€${p.price.toFixed(2)}</p>
+        <h3>${p.name}</h3>
+        <p>€${p.price.toFixed(2)}</p>
+        <div class="controls">
+          <input type="number" id="qty-${index}" value="1" min="1">
+          <button onclick="addToCart(${index})">Voeg toe</button>
         </div>
-        <button onclick="addToCart('${p.name}', ${p.price})">Voeg toe</button>
       `;
       productContainer.appendChild(div);
     });
 
-    // Winkelmandje
-    function addToCart(name, price) {
-      cart.push({ name, price });
+    function addToCart(index) {
+      const qty = parseInt(document.getElementById(`qty-${index}`).value);
+      const p = products[index];
+      for (let i = 0; i < qty; i++) {
+        cart.push({ name: p.name, price: p.price });
+      }
       renderCart();
     }
 
@@ -135,7 +178,6 @@
       total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
     }
 
-    // Afrekenen + data naar Google Sheet
     async function checkout() {
       if (cart.length === 0) {
         alert('Je winkelmandje is leeg!');
