@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Mijn Bestellingen</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: auto;
+      background: #fafafa;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .order {
+      background: #fff;
+      border: 1px solid #007bff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .order h3 {
+      margin: 0 0 10px;
+      color: #007bff;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin: 5px 0 10px;
+    }
+
+    button {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #b52a36;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 Mijn Bestellingen</h1>
+
+  <div id="orders"></div>
+
+  <button onclick="clearOrders()">Verwijder alle bestellingen</button>
+  <br>
+  <a href="index.html">← Terug naar de webshop</a>
+
+  <script>
+    const ordersContainer = document.getElementById('orders');
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+    function renderOrders() {
+      if (orders.length === 0) {
+        ordersContainer.innerHTML = "<p>Er zijn nog geen bestellingen opgeslagen.</p>";
+        return;
+      }
+
+      ordersContainer.innerHTML = "";
+      orders.forEach(o => {
+        const div = document.createElement('div');
+        div.className = 'order';
+        div.innerHTML = `
+          <h3>🧾 Bestelling van ${o.naam}</h3>
+          <p><strong>Datum:</strong> ${o.datum}</p>
+          <ul>${o.producten.map(p => `<li>${p}</li>`).join('')}</ul>
+          <p><strong>Totaal:</strong> €${o.totaal}</p>
+        `;
+        ordersContainer.appendChild(div);
+      });
+    }
+
+    function clearOrders() {
+      if (confirm("Weet je zeker dat je alle bestellingen wilt verwijderen?")) {
+        localStorage.removeItem("orders");
+        renderOrders();
+      }
+    }
+
+    renderOrders();
+  </script>
+</body>
+</html>
