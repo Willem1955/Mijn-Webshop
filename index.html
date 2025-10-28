@@ -88,6 +88,33 @@
       border-radius: 12px;
     }
 
+    #cart-items {
+      list-style: none;
+      padding: 0;
+    }
+
+    #cart-items li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+
+    .remove-btn {
+      background: #dc3545;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
+
+    .remove-btn:hover {
+      background: #b52a36;
+    }
+
     #checkout-info {
       display: none;
       background: #e8f0fe;
@@ -173,8 +200,25 @@
       renderCart();
     }
 
+    function removeFromCart(i) {
+      cart.splice(i, 1);
+      renderCart();
+    }
+
     function renderCart() {
-      cartItems.innerHTML = cart.map(c => `<li>${c.name} - €${c.price.toFixed(2)}</li>`).join('');
+      if (cart.length === 0) {
+        cartItems.innerHTML = "<li>Je winkelmandje is leeg.</li>";
+        total.textContent = "0.00";
+        return;
+      }
+
+      cartItems.innerHTML = cart.map((c, i) => `
+        <li>
+          ${c.name} - €${c.price.toFixed(2)}
+          <button class="remove-btn" onclick="removeFromCart(${i})">❌</button>
+        </li>
+      `).join('');
+
       total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
     }
 
