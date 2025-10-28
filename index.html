@@ -131,16 +131,47 @@
       total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
     }
 
-    function checkout() {
-      if (cart.length === 0) {
-        alert('Je winkelmandje is leeg!');
-        return;
-      }
-      const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
-      checkoutTotal.textContent = totaal;
-      checkoutBox.style.display = 'block';
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+   <script>
+  const SCRIPT_URL = "HIER-JE-API-URL-PLAKKEN"; // vervang dit!
+
+  // ... je producten en bestaande functies ...
+
+  async function checkout() {
+    if (cart.length === 0) {
+      alert('Je winkelmandje is leeg!');
+      return;
     }
+
+    const naam = prompt("Voer je naam in voor de bestelling:");
+    const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
+
+    const bestelling = {
+      naam: naam,
+      producten: cart.map(c => c.name),
+      totaal: totaal
+    };
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(bestelling),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (data.status === "ok") {
+        alert(`Bestelling #${data.order} is geregistreerd!\nTotaal: €${totaal}\n\nJe kunt nu overschrijven.`);
+        cart = [];
+        renderCart();
+      } else {
+        alert("Er ging iets mis bij het registreren van je bestelling.");
+      }
+    } catch (err) {
+      alert("Fout bij verbinding met server.");
+      console.error(err);
+    }
+  }
+</script>
+
   </script>
 </body>
 </html>
