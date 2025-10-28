@@ -172,7 +172,9 @@
     const total = document.getElementById('total');
     const checkoutBox = document.getElementById('checkout-info');
     const checkoutTotal = document.getElementById('checkout-total');
-    let cart = [];
+
+    // 🧠 Winkelmandje laden uit localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     // === Producten tonen ===
     products.forEach((p, index) => {
@@ -190,22 +192,30 @@
       productContainer.appendChild(div);
     });
 
+    // === Winkelmandje functies ===
+    function saveCart() {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
     function addToCart(index) {
       const qty = parseInt(document.getElementById(`qty-${index}`).value);
       const p = products[index];
       for (let i = 0; i < qty; i++) {
         cart.push({ name: p.name, price: p.price });
       }
+      saveCart();
       renderCart();
     }
 
     function removeFromCart(i) {
       cart.splice(i, 1);
+      saveCart();
       renderCart();
     }
 
     function clearCart() {
       cart = [];
+      saveCart();
       renderCart();
     }
 
@@ -243,10 +253,27 @@
       checkoutBox.style.display = 'block';
 
       alert(`✅ Bedankt ${naam}! Je bestelling bedraagt €${totaal}.\n\nVolg de betaalinstructies onderaan de pagina.`);
+
+      // Bestelling opslaan in localStorage
+      const bestellingen = JSON.parse(localStorage.getItem("orders")) || [];
+      bestellingen.push({
+        naam,
+        producten: cart.map(c => c.name),
+        totaal,
+        datum: new Date().toLocaleString()
+      });
+      localStorage.setItem("orders", JSON.stringify(bestellingen));
+
+      // Winkelmandje leegmaken
       cart = [];
+      saveCart();
       renderCart();
+
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
+
+    // Pagina start: winkelmandje laden
+    renderCart();
   </script>
 </body>
 </html>
