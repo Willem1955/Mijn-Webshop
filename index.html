@@ -334,4 +334,68 @@
         const li = document.createElement("li");
         li.innerHTML = `
           <span>${c.name} - €${c.price.toFixed(2)}</span>
-          <button class
+          <button class="remove-btn" onclick="removeFromCart(${i})">❌</button>
+        `;
+        cartItems.appendChild(li);
+      });
+
+      total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
+    }
+
+    // === CHECKOUT FUNCTIE ===
+    function checkout() {
+      if (cart.length === 0) {
+        alert('Je winkelmandje is leeg!');
+        return;
+      }
+
+      document.getElementById('customer-form').style.display = 'block';
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function verwerkBestelling(event) {
+      event.preventDefault();
+
+      const klant = {
+        voornaam: document.getElementById('voornaam').value,
+        naam: document.getElementById('naam').value,
+        email: document.getElementById('email').value,
+        gsm: document.getElementById('gsm').value,
+        straat: document.getElementById('straat').value,
+        nummer: document.getElementById('nummer').value,
+        postcode: document.getElementById('postcode').value,
+        gemeente: document.getElementById('gemeente').value
+      };
+
+      const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
+      checkoutTotal.textContent = totaal;
+      checkoutBox.style.display = 'block';
+
+      alert(`✅ Bedankt ${klant.voornaam}! Je bestelling bedraagt €${totaal}.\n\nVolg de betaalinstructies onderaan de pagina.`);
+
+      const bestelnummer = Date.now();
+      const bestellingen = JSON.parse(localStorage.getItem("orders")) || [];
+      bestellingen.push({
+        bestelnummer,
+        klant,
+        producten: cart.map(c => c.name),
+        totaal,
+        datum: new Date().toLocaleString()
+      });
+      localStorage.setItem("orders", JSON.stringify(bestellingen));
+
+      cart = [];
+      saveCart();
+      renderCart();
+
+      document.getElementById('customer-form').style.display = 'none';
+      document.getElementById('orderForm').reset();
+
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+</html>
