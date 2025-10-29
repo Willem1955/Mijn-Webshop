@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard – Mijn Webshop</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 40px auto;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #007bff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+    }
+
+    tr:hover {
+      background: #f1f1f1;
+    }
+
+    .no-orders {
+      text-align: center;
+      color: #666;
+      margin-top: 20px;
+    }
+
+    button {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #b52a36;
+    }
+
+    .small {
+      font-size: 0.9em;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Dashboard – Mijn Webshop</h1>
+  <div id="content"></div>
+
+  <script>
+    // === TOEGANGSCONTROLE ===
+    const ADMIN_WACHTWOORD = "beheer123"; // ← pas aan naar jouw wachtwoord
+    const wachtwoord = prompt("Voer admin-wachtwoord in:");
+    if (wachtwoord !== ADMIN_WACHTWOORD) {
+      alert("❌ Toegang geweigerd");
+      window.location.href = "index.html";
