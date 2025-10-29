@@ -153,6 +153,32 @@
       margin-top: 25px;
     }
 
+    /* === KLANTFORMULIER === */
+    #customer-form {
+      display: none;
+      background: #fff;
+      border: 1px solid #007bff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 25px;
+    }
+
+    #customer-form h2 {
+      margin-top: 0;
+    }
+
+    #customer-form form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    #customer-form input {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
     /* Responsive */
     @media (max-width: 900px) {
       #products {
@@ -162,6 +188,10 @@
 
     @media (max-width: 600px) {
       #products {
+        grid-template-columns: 1fr;
+      }
+
+      #customer-form form {
         grid-template-columns: 1fr;
       }
     }
@@ -178,8 +208,10 @@
     <button class="cat-btn" onclick="filterProducts('Papierwaren', this)">Papierwaren</button>
   </nav>
 
+  <!-- === PRODUCTEN === -->
   <div id="products"></div>
 
+  <!-- === WINKELMANDJE === -->
   <div id="cart">
     <h2>🛒 Winkelmandje</h2>
     <ul id="cart-items"></ul>
@@ -188,6 +220,26 @@
     <button onclick="clearCart()" style="background:#6c757d; margin-left:10px;">Leeg mandje</button>
   </div>
 
+  <!-- === CHECKOUT FORM === -->
+  <div id="customer-form">
+    <h2>🧾 Klantgegevens</h2>
+    <p>Vul je gegevens in om je bestelling te voltooien:</p>
+
+    <form id="orderForm" onsubmit="verwerkBestelling(event)">
+      <input type="text" id="voornaam" placeholder="Voornaam" required>
+      <input type="text" id="naam" placeholder="Naam" required>
+      <input type="email" id="email" placeholder="E-mailadres" required>
+      <input type="text" id="gsm" placeholder="GSM-nummer" required>
+      <input type="text" id="straat" placeholder="Straat" required>
+      <input type="text" id="nummer" placeholder="Nr." required>
+      <input type="text" id="postcode" placeholder="Postcode" required>
+      <input type="text" id="gemeente" placeholder="Gemeente" required>
+
+      <button type="submit" style="grid-column: span 2; margin-top:15px;">✅ Bevestig bestelling</button>
+    </form>
+  </div>
+
+  <!-- === CHECKOUT INFO === -->
   <div id="checkout-info">
     <h2>💳 Betaal via overschrijving</h2>
     <p>Bedankt voor je bestelling!</p>
@@ -217,6 +269,7 @@
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+    // === PRODUCTEN RENDEREN ===
     function renderProducts(category = "Alle") {
       productContainer.innerHTML = "";
       const filtered = category === "Alle" ? products : products.filter(p => p.category === category);
@@ -281,49 +334,4 @@
         const li = document.createElement("li");
         li.innerHTML = `
           <span>${c.name} - €${c.price.toFixed(2)}</span>
-          <button class="remove-btn" onclick="removeFromCart(${i})">❌</button>
-        `;
-        cartItems.appendChild(li);
-      });
-
-      total.textContent = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
-    }
-
-    function checkout() {
-      if (cart.length === 0) {
-        alert('Je winkelmandje is leeg!');
-        return;
-      }
-
-      const naam = prompt("Voer je naam in voor de bestelling:");
-      if (!naam) return;
-
-      const totaal = cart.reduce((sum, c) => sum + c.price, 0).toFixed(2);
-      checkoutTotal.textContent = totaal;
-      checkoutBox.style.display = 'block';
-
-      alert(`✅ Bedankt ${naam}! Je bestelling bedraagt €${totaal}.\n\nVolg de betaalinstructies onderaan de pagina.`);
-
-      const bestelnummer = Date.now();
-      const bestellingen = JSON.parse(localStorage.getItem("orders")) || [];
-      bestellingen.push({
-        bestelnummer,
-        naam,
-        producten: cart.map(c => c.name),
-        totaal,
-        datum: new Date().toLocaleString()
-      });
-      localStorage.setItem("orders", JSON.stringify(bestellingen));
-
-      cart = [];
-      saveCart();
-      renderCart();
-
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-
-    renderProducts();
-    renderCart();
-  </script>
-</body>
-</html>
+          <button class
