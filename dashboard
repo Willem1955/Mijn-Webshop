@@ -80,3 +80,64 @@
     if (wachtwoord !== ADMIN_WACHTWOORD) {
       alert("❌ Toegang geweigerd");
       window.location.href = "index.html";
+    } else {
+      laadDashboard();
+    }
+
+    // === DASHBOARD FUNCTIES ===
+    function laadDashboard() {
+      const content = document.getElementById("content");
+      const bestellingen = JSON.parse(localStorage.getItem("orders")) || [];
+
+      if (bestellingen.length === 0) {
+        content.innerHTML = "<p class='no-orders'>Geen bestellingen gevonden.</p>";
+        return;
+      }
+
+      let html = `
+        <table>
+          <tr>
+            <th>Bestelnummer</th>
+            <th>Klant</th>
+            <th>Email</th>
+            <th>GSM</th>
+            <th>Adres</th>
+            <th>Producten</th>
+            <th>Totaal (€)</th>
+            <th>Datum</th>
+          </tr>
+      `;
+
+      bestellingen.forEach(b => {
+        const klant = b.klant;
+        html += `
+          <tr>
+            <td>${b.bestelnummer}</td>
+            <td>${klant.voornaam} ${klant.naam}</td>
+            <td>${klant.email}</td>
+            <td>${klant.gsm}</td>
+            <td>${klant.straat} ${klant.nummer}, ${klant.postcode} ${klant.gemeente}</td>
+            <td>${b.producten.join(", ")}</td>
+            <td>${b.totaal}</td>
+            <td class="small">${b.datum}</td>
+          </tr>
+        `;
+      });
+
+      html += `</table>
+        <button onclick="wisBestellingen()">🗑️ Wis alle bestellingen</button>
+      `;
+
+      content.innerHTML = html;
+    }
+
+    function wisBestellingen() {
+      if (confirm("Weet je zeker dat je alle bestellingen wil verwijderen?")) {
+        localStorage.removeItem("orders");
+        alert("Alle bestellingen zijn verwijderd.");
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
